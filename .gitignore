@@ -1,0 +1,104 @@
+# ============================================
+# 婦產科胚胎預測專案 .gitignore
+# ============================================
+
+# --------------------------------------------
+# 資料檔案（不上傳至 GitHub）
+# --------------------------------------------
+# 原始資料（保留 .gitkeep）
+data/raw/*
+!data/raw/.gitkeep
+
+# 處理後資料（保留 metadata.json）
+data/processed/*/train/
+data/processed/*/val/
+data/processed/*/test/
+data/processed/*/*.csv
+!data/processed/*/metadata.json
+
+# 中間暫存資料（保留 .gitkeep）
+data/interim/*
+!data/interim/.gitkeep
+
+# --------------------------------------------
+# 模型檔案（太大）
+# --------------------------------------------
+models/*.pth
+models/*.pt
+models/*.h5
+models/*.onnx
+*.pth
+*.pt
+
+# --------------------------------------------
+# Python
+# --------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# --------------------------------------------
+# Jupyter Notebook
+# --------------------------------------------
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# --------------------------------------------
+# IDE / Editor
+# --------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.spyderproject
+.spyproject
+
+# --------------------------------------------
+# macOS
+# --------------------------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# --------------------------------------------
+# 輸出檔案（可選擇性保留）
+# --------------------------------------------
+# 如果圖表太多可以取消註解
+# outputs/figures/
+outputs/logs/*.log
+
+# --------------------------------------------
+# 其他
+# --------------------------------------------
+*.log
+*.tmp
+*.temp
+.env
+.env.local
+secrets.yaml
+credentials.json

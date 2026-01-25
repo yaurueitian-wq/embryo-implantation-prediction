@@ -1,0 +1,61 @@
+{
+  "_notice": "⚠️ 這是範例檔案，僅供參考格式，非實際資料",
+  "version": "v1.0_baseline_example",
+  "created_date": "2025-01-25",
+  "created_by": "（範例）王小明",
+  "base_version": "raw/hvwc23",
+  "description": "【範例】基礎資料處理：80/20 分割訓練驗證集，無額外增強",
+
+  "processing_steps": [
+    {
+      "step": 1,
+      "action": "train_val_split",
+      "params": {
+        "val_ratio": 0.2,
+        "random_seed": 42,
+        "stratified": true
+      },
+      "note": "分層抽樣確保類別比例一致"
+    },
+    {
+      "step": 2,
+      "action": "copy_test",
+      "params": {},
+      "note": "測試集直接複製，不做處理"
+    }
+  ],
+
+  "statistics": {
+    "train": {
+      "total": 672,
+      "class_0": 573,
+      "class_1": 99,
+      "class_1_ratio": "14.7%"
+    },
+    "val": {
+      "total": 168,
+      "class_0": 143,
+      "class_1": 25,
+      "class_1_ratio": "14.9%"
+    },
+    "test": {
+      "total": 180,
+      "note": "無標籤"
+    }
+  },
+
+  "file_structure": {
+    "train/": "672 張影像",
+    "val/": "168 張影像",
+    "test/": "180 張影像",
+    "train.csv": "訓練集標籤 (Image, Class)",
+    "val.csv": "驗證集標籤 (Image, Class)",
+    "test.csv": "測試集列表 (ID, Image)"
+  },
+
+  "source_notebook": "notebooks/02_data_preprocessing_v1.0.ipynb",
+
+  "used_in_experiments": ["EXP-001_example"],
+
+  "notes": "⚠️ 這是範例檔案，展示 metadata.json 應有的格式與內容。實際使用時請建立新的資料版本資料夾。"
+}
