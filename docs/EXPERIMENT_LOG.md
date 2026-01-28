@@ -9,7 +9,8 @@
 | 實驗編號 | 日期 | 資料版本 | 模型 | 主要改動 | Val Acc | Val AUC | 備註 |
 |----------|------|----------|------|----------|---------|---------|------|
 | EXP-001_example | 2025-01-25 | v1.0_baseline_example | ResNet18 | Baseline | 85.7% | 0.72 | ⚠️ 範例 |
-| EXP-001 | | | | | | | （實際實驗待執行）|
+| EXP-001 | 2025-01-26 | raw/hvwc23 | ResNet18 | Baseline + 類別加權 | 85.12% | 0.7986 | ✅ 基準模型 |
+| EXP-002 | | | | | | | （待執行）|
 
 ---
 
@@ -113,10 +114,91 @@ TN=135, FP=8, FN=16, TP=9
 
 ---
 
-### EXP-002：(實驗名稱)
+### EXP-001：Baseline 基準模型（實際執行）
 
-**日期**：YYYY-MM-DD
-**執行者**：(姓名)
+**日期**：2025-01-26
+**執行者**：（請填寫）
+**目標**：建立基準效能，了解資料特性
+**執行環境**：Google Colab (T4 GPU)
+
+#### 使用資料版本
+
+| 項目 | 值 |
+|------|-----|
+| **資料版本** | 原始資料 (raw/hvwc23) |
+| **資料路徑** | Google Drive: /MyDrive/hvwc23/ |
+| **訓練樣本** | 672 張 (80%) |
+| **驗證樣本** | 168 張 (20%) |
+| **分割方式** | Stratified split (類別比例一致) |
+
+#### 實驗配置
+
+```yaml
+# 模型架構
+model:
+  name: ResNet18
+  pretrained: true  # ImageNet 預訓練權重
+  num_classes: 2
+
+# 資料設定
+data:
+  image_size: 224
+  train_samples: 672
+  val_samples: 168
+  augmentation:
+    - RandomHorizontalFlip(p=0.5)
+    - RandomRotation(degrees=15)
+    - ColorJitter(brightness=0.1, contrast=0.1)
+    - Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+
+# 訓練參數
+training:
+  batch_size: 32
+  epochs: 20
+  optimizer: Adam
+  learning_rate: 0.001
+  weight_decay: 1e-4
+  scheduler: StepLR(step_size=10, gamma=0.1)
+  criterion: CrossEntropyLoss(weight=class_weights)  # 類別加權
+
+# 處理類別不平衡
+imbalance_strategy: weighted_loss
+```
+
+#### 實驗結果
+
+| 指標 | 驗證集 |
+|------|--------|
+| **Accuracy** | 85.12% |
+| **AUC-ROC** | **0.7986** |
+| **Precision (class 1)** | 50.00% |
+| **Recall (class 1)** | **76.00%** |
+| **F1-Score (class 1)** | 60.32% |
+
+#### 結果分析
+
+**✅ 優點：**
+1. **Recall 達到 76%**：會著床的胚胎，模型能猜對大部分
+2. **AUC 接近 0.8**：模型有一定的分辨能力
+3. **類別加權有效**：比不加權時 Recall 更高
+
+**⚠️ 待改進：**
+1. **Precision 只有 50%**：預測「會著床」的胚胎中，一半是誤報
+2. **可能有改進空間**：AUC 還未達到 0.85+
+
+#### 下一步改進方向
+
+- [ ] 調整判斷閾值（降低閾值可能提高 Recall，但會降低 Precision）
+- [ ] 嘗試更強的資料增強
+- [ ] 嘗試其他模型架構（EfficientNet, ConvNeXt）
+- [ ] 嘗試 Focal Loss 處理類別不平衡
+
+---
+
+### EXP-002：（待執行）
+
+**日期**：
+**執行者**：
 **目標**：
 
 #### 相較於 EXP-001 的改動
@@ -131,10 +213,11 @@ TN=135, FP=8, FN=16, TP=9
 
 #### 實驗結果
 
-| 指標 | 訓練集 | 驗證集 | vs EXP-001 |
-|------|--------|--------|------------|
-| Accuracy | | | |
-| AUC-ROC | | | |
+| 指標 | 驗證集 | vs EXP-001 |
+|------|--------|------------|
+| Accuracy | | |
+| AUC-ROC | | |
+| Recall (class 1) | | |
 
 #### 分析與觀察
 
@@ -145,21 +228,22 @@ TN=135, FP=8, FN=16, TP=9
 
 ## 最佳模型記錄
 
-| 排名 | 實驗編號 | Val AUC | 模型檔案 | 備註 |
-|------|----------|---------|----------|------|
-| 1 | | | | |
-| 2 | | | | |
-| 3 | | | | |
+| 排名 | 實驗編號 | Val AUC | Val Recall | 模型檔案 | 備註 |
+|------|----------|---------|------------|----------|------|
+| 1 | EXP-001 | 0.7986 | 76.00% | best_model.pth (Colab) | 目前最佳 |
+| 2 | | | | | |
+| 3 | | | | | |
 
 ---
 
 ## 實驗心得與教訓
 
 ### 有效的策略
--
+- ✅ 類別加權 (Weighted CrossEntropyLoss)：有效提高少數類的 Recall
 
 ### 無效的策略
--
+- （待補充）
 
 ### 注意事項
--
+- 資料嚴重不平衡（85% vs 15%），單看 Accuracy 會被誤導
+- 醫療情境下 **Recall 比 Precision 重要**（漏掉好胚胎比誤報更嚴重）
